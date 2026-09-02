@@ -452,6 +452,18 @@ mod tests {
             (crate::event_topics::ESCROW_RELEASED, HASH_DOMAIN_ESCROW),
             (crate::event_topics::ESCROW_REFUNDED, HASH_DOMAIN_ESCROW),
             (crate::event_topics::DISPUTE_RESOLVED, HASH_DOMAIN_DISPUTE),
+            (crate::event_topics::CONDITION_BREACH, HASH_DOMAIN_CONDITION),
+            (crate::event_topics::CARRIER_HANDOFF, HASH_DOMAIN_CARRIER),
+            (crate::event_topics::ADMIN_PROPOSED, HASH_DOMAIN_ADMIN),
+            (crate::event_topics::RECOVERY_EVENT, HASH_DOMAIN_ADMIN),
+            (crate::event_topics::ESCROW_UNLOCK_EVENT, HASH_DOMAIN_ADMIN),
+            (
+                crate::event_topics::FINALIZATION_CLEAR_EVENT,
+                HASH_DOMAIN_ADMIN,
+            ),
+            (crate::event_topics::ROLE_REVOKED, HASH_DOMAIN_RBAC),
+            (crate::event_topics::NOTIFICATION, HASH_DOMAIN_NOTIFICATION),
+            (crate::event_topics::NOTE_APPENDED, HASH_DOMAIN_NOTE),
             (crate::event_topics::SHIPMENT_CREATED, HASH_DOMAIN_SHIPMENT),
         ];
 
@@ -514,5 +526,4 @@ mod tests {
             HASH_DOMAIN_SHIPMENT
         );
     }
-
 }

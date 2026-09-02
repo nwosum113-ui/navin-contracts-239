@@ -85,9 +85,9 @@ None → Pending → Completed
 ### Transition Rules
 
 - Only one active settlement (Pending state) per shipment at a time
-- Failed settlements remain active for investigation/retry
+- Failed transfers revert atomically, so no failed settlement is persisted or remains active
 - Completed settlements clear the active settlement marker
-- Failed settlements can be explicitly cancelled to unblock the shipment
+- Failed transfers leave no active marker, so callers can retry immediately
 
 ## Implementation Details
 
@@ -262,39 +262,11 @@ Get the total number of settlements created.
 pub fn get_settlement_count(env: Env) -> u64
 ```
 
-### Management Functions
-
-#### `cancel_active_settlement`
-Explicitly cancel a failed active settlement to unblock the shipment.
-
-```rust
-pub fn cancel_active_settlement(
-    env: Env,
-    caller: Address,
-    shipment_id: u64,
-) -> Result<(), NavinError>
-```
-
-**Authorization:**
-- Sender (company)
-- Receiver
-- Admin
-
-**Requirements:**
-- Active settlement must exist
-- Active settlement must be in Failed state
-
-**Behavior:**
-- Clears active settlement marker
-- Emits `settlement_cancelled` event
-- Allows new settlement operations to proceed
-
 ## Error Handling
 
 ### Error Codes
 
-- `SettlementInProgress` (47): A settlement operation is already in progress for this shipment
-- `SettlementNotFailed` (48): The active settlement is not in a failed state and cannot be cancelled
+- `SettlementInProgress` (72): A settlement operation is already in progress for this shipment
 
 ### Failure Scenarios and Soroban Transaction Semantics
 
@@ -428,8 +400,6 @@ The implementation includes comprehensive tests covering:
 
 3. **State Machine**
    - `test_settlement_in_progress_error`
-   - `test_cancel_active_settlement`
-   - `test_cancel_active_settlement_unauthorized`
 
 4. **Metadata & Queries**
    - `test_settlement_record_metadata`
@@ -482,9 +452,9 @@ env.events().publish(
 - No ambiguity about whether a transfer is in progress
 
 ### 2. Failure Handling
-- Failed settlements remain visible for investigation
-- Error codes provide diagnostic information
-- Explicit cancellation prevents accidental retries
+- Failed transfers revert atomically, preserving shipment and settlement consistency
+- The transfer error is returned to the caller
+- Retries are immediately safe because no active marker persists
 
 ### 3. Concurrency Control
 - Only one active settlement per shipment
@@ -497,9 +467,8 @@ env.events().publish(
 - Source and destination addresses recorded
 
 ### 5. Retry Support
-- Failed settlements can be investigated
-- Explicit cancellation enables retry
-- State machine prevents duplicate operations
+- Failed transfers can be retried immediately after the transaction reverts
+- State machine prevents duplicate active operations
 
 ## Future Enhancements
 
@@ -550,9 +519,9 @@ env.events().publish(
 - Metadata and query tests
 
 ✅ **Failures leave clear state for retries/investigation**
-- Failed settlements remain active
-- Error codes stored in settlement records
-- Explicit cancellation required to unblock
+- Failed transfers leave no settlement record or active marker after rollback
+- The transfer error is returned to the caller
+- Immediate retry is supported
 - Complete audit trail maintained
 
 ## Conclusion

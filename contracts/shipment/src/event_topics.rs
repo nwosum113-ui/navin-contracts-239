@@ -119,6 +119,15 @@ pub const CONTRACT_UNPAUSED: &str = "contract_unpaused";
 /// Emitted when an admin forcibly cancels a shipment (privileged path).
 pub const FORCE_CANCELLED: &str = "force_cancelled";
 
+/// Emitted when an administrator recovers a shipment from a stuck state.
+pub const RECOVERY_EVENT: &str = "recovery_event";
+
+/// Emitted when an administrator unlocks escrow during recovery.
+pub const ESCROW_UNLOCK_EVENT: &str = "escrow_unlock_event";
+
+/// Emitted when an administrator clears a shipment finalization flag.
+pub const FINALIZATION_CLEAR_EVENT: &str = "finalization_clear_event";
+
 /// Emitted when the platform fee configuration is updated.
 pub const FEE_CONFIG_UPDATED: &str = "fee_config_updated";
 
@@ -182,14 +191,12 @@ pub const HASH_DOMAIN_DISPUTE: u8 = 0x03;
 
 /// Domain tag for condition-breach / sensor-data events
 /// (`condition_breach`, `carrier_breach`).
-#[allow(dead_code)]
 pub const HASH_DOMAIN_CONDITION: u8 = 0x04;
 
 /// Domain tag for carrier-reputation events
 /// (`carrier_late_delivery`, `carrier_on_time_delivery`,
 ///  `carrier_handoff`, `carrier_handoff_completed`,
 ///  `carrier_milestone_rate`, `carrier_dispute_loss`).
-#[allow(dead_code)]
 pub const HASH_DOMAIN_CARRIER: u8 = 0x05;
 
 /// Domain tag for admin / governance events
@@ -197,20 +204,16 @@ pub const HASH_DOMAIN_CARRIER: u8 = 0x05;
 ///  `migration_reported`, `contract_paused`, `contract_unpaused`,
 ///  `force_cancelled`, `recovery_event`, `escrow_unlock_event`,
 ///  `finalization_clear_event`).
-#[allow(dead_code)]
 pub const HASH_DOMAIN_ADMIN: u8 = 0x06;
 
 /// Domain tag for RBAC events
 /// (`role_revoked`, `role_changed`).
-#[allow(dead_code)]
 pub const HASH_DOMAIN_RBAC: u8 = 0x07;
 
 /// Domain tag for notification events (`notification`).
-#[allow(dead_code)]
 pub const HASH_DOMAIN_NOTIFICATION: u8 = 0x08;
 
 /// Domain tag for shipment-note events (`note_appended`).
-#[allow(dead_code)]
 pub const HASH_DOMAIN_NOTE: u8 = 0x09;
 
 /// Domain tag for platform-level events (`platform_fee_collected`, `fee_config_updated`).
@@ -271,6 +274,9 @@ const NON_DEFAULT_HASH_DOMAINS: &[(&str, u8)] = &[
     (CONTRACT_PAUSED, HASH_DOMAIN_ADMIN),
     (CONTRACT_UNPAUSED, HASH_DOMAIN_ADMIN),
     (FORCE_CANCELLED, HASH_DOMAIN_ADMIN),
+    (RECOVERY_EVENT, HASH_DOMAIN_ADMIN),
+    (ESCROW_UNLOCK_EVENT, HASH_DOMAIN_ADMIN),
+    (FINALIZATION_CLEAR_EVENT, HASH_DOMAIN_ADMIN),
     (CONTRACT_INITIALIZED, HASH_DOMAIN_ADMIN),
     (SHIPMENT_LIMIT_UPDATED, HASH_DOMAIN_ADMIN),
     (COMPANY_LIMIT_UPDATED, HASH_DOMAIN_ADMIN),

@@ -474,6 +474,12 @@ pub fn error_info(error: NavinError) -> ContractErrorInfo {
             NoRetry,
             "Maximum allowed recovery action entries for a shipment has been reached.",
         ),
+        NavinError::SettlementInProgress => (
+            72,
+            InvalidState,
+            RetryAfterStateChange,
+            "A settlement operation is already active for this shipment.",
+        ),
     };
 
     ContractErrorInfo {
@@ -575,6 +581,7 @@ pub fn get_error_info(code: u32) -> ContractErrorInfo {
         69 => error_info(NavinError::CarrierAlreadyWhitelisted),
         70 => error_info(NavinError::InvalidAddress),
         71 => error_info(NavinError::RecoveryLimitExceeded),
+        72 => error_info(NavinError::SettlementInProgress),
         _ => ContractErrorInfo {
             code,
             category: ErrorCategory::InvalidInput,

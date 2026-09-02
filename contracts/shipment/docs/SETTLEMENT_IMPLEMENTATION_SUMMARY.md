@@ -46,7 +46,7 @@ The settlement state machine has been successfully implemented to track explicit
 #### `fail_settlement()`
 - Updates settlement state to Failed
 - Records completion timestamp and error code
-- Leaves active settlement marker (for investigation)
+- Clears active settlement marker; failed transfers ultimately roll back atomically
 
 **Integration Points**:
 - `deposit_escrow()`: Creates settlement before token transfer
@@ -128,21 +128,9 @@ pub fn get_active_settlement(env: Env, shipment_id: u64) -> Result<Option<u64>, 
 pub fn get_settlement_count(env: Env) -> u64
 ```
 
-### Management Functions
-
-```rust
-/// Cancel a failed active settlement to unblock the shipment
-pub fn cancel_active_settlement(
-    env: Env,
-    caller: Address,
-    shipment_id: u64,
-) -> Result<(), NavinError>
-```
-
 ## Error Codes
 
-- `SettlementInProgress` (47): A settlement operation is already in progress
-- `SettlementNotFailed` (48): The active settlement is not in a failed state
+- `SettlementInProgress` (72): A settlement operation is already in progress
 
 ## Documentation
 
@@ -216,7 +204,7 @@ Documented in `SETTLEMENT_STATE_MACHINE.md`:
 - `contracts/shipment/src/types.rs`: Added settlement types
 - `contracts/shipment/src/storage.rs`: Added settlement storage functions
 - `contracts/shipment/src/lib.rs`: Integrated settlement state machine
-- `contracts/shipment/src/errors.rs`: Already had required error codes
+- `contracts/shipment/src/errors.rs`: Defines `SettlementInProgress` (72)
 
 ### Tests:
 - `contracts/shipment/src/test_settlement.rs`: Core settlement tests

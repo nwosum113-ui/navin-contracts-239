@@ -110,7 +110,7 @@ pub fn emit_shipment_created(
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_SHIPMENT,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::SHIPMENT_CREATED),
         shipment_id,
         crate::event_topics::SHIPMENT_CREATED,
         event_counter,
@@ -172,7 +172,7 @@ pub fn emit_status_updated(
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_SHIPMENT,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::STATUS_UPDATED),
         shipment_id,
         crate::event_topics::STATUS_UPDATED,
         event_counter,
@@ -238,7 +238,7 @@ pub fn emit_milestone_recorded(
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_SHIPMENT,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::MILESTONE_RECORDED),
         shipment_id,
         crate::event_topics::MILESTONE_RECORDED,
         event_counter,
@@ -293,7 +293,7 @@ pub fn emit_escrow_deposited(env: &Env, shipment_id: u64, from: &Address, amount
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_ESCROW,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::ESCROW_DEPOSITED),
         shipment_id,
         crate::event_topics::ESCROW_DEPOSITED,
         event_counter,
@@ -346,7 +346,7 @@ pub fn emit_escrow_released(env: &Env, shipment_id: u64, to: &Address, amount: i
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_ESCROW,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::ESCROW_RELEASED),
         shipment_id,
         crate::event_topics::ESCROW_RELEASED,
         event_counter,
@@ -399,7 +399,7 @@ pub fn emit_escrow_refunded(env: &Env, shipment_id: u64, to: &Address, amount: i
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_ESCROW,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::ESCROW_REFUNDED),
         shipment_id,
         crate::event_topics::ESCROW_REFUNDED,
         event_counter,
@@ -431,7 +431,7 @@ pub fn emit_milestone_payment_released(
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_ESCROW,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::MILESTONE_PAYMENT_RELEASED),
         shipment_id,
         crate::event_topics::MILESTONE_PAYMENT_RELEASED,
         event_counter,
@@ -530,7 +530,7 @@ pub fn emit_shipment_cancelled(
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_SHIPMENT,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::SHIPMENT_CANCELLED),
         shipment_id,
         crate::event_topics::SHIPMENT_CANCELLED,
         event_counter,
@@ -738,7 +738,7 @@ pub fn emit_shipment_expired(env: &Env, shipment_id: u64) {
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_SHIPMENT,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::SHIPMENT_EXPIRED),
         shipment_id,
         crate::event_topics::SHIPMENT_EXPIRED,
         event_counter,
@@ -776,7 +776,7 @@ pub fn emit_delivery_success(env: &Env, carrier: &Address, shipment_id: u64, del
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_SHIPMENT,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::DELIVERY_SUCCESS),
         shipment_id,
         crate::event_topics::DELIVERY_SUCCESS,
         event_counter,
@@ -1206,7 +1206,7 @@ pub fn emit_dispute_resolved(
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_DISPUTE,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::DISPUTE_RESOLVED),
         shipment_id,
         crate::event_topics::DISPUTE_RESOLVED,
         event_counter,
@@ -1319,7 +1319,7 @@ pub fn emit_recovery_event(
     reason_hash: &BytesN<32>,
 ) {
     env.events().publish(
-        (Symbol::new(env, "recovery_event"),),
+        (Symbol::new(env, crate::event_topics::RECOVERY_EVENT),),
         (
             shipment_id,
             admin.clone(),
@@ -1359,7 +1359,7 @@ pub fn emit_escrow_unlock_event(
     reason_hash: &BytesN<32>,
 ) {
     env.events().publish(
-        (Symbol::new(env, "escrow_unlock_event"),),
+        (Symbol::new(env, crate::event_topics::ESCROW_UNLOCK_EVENT),),
         (
             shipment_id,
             admin.clone(),
@@ -1395,7 +1395,10 @@ pub fn emit_finalization_clear_event(
     reason_hash: &BytesN<32>,
 ) {
     env.events().publish(
-        (Symbol::new(env, "finalization_clear_event"),),
+        (Symbol::new(
+            env,
+            crate::event_topics::FINALIZATION_CLEAR_EVENT,
+        ),),
         (
             shipment_id,
             admin.clone(),
@@ -1451,7 +1454,7 @@ pub fn emit_platform_fee_collected(env: &Env, shipment_id: u64, treasury: &Addre
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_PLATFORM,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::PLATFORM_FEE_COLLECTED),
         shipment_id,
         crate::event_topics::PLATFORM_FEE_COLLECTED,
         event_counter,
@@ -1533,7 +1536,7 @@ pub fn emit_delivery_confirmed(
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_SHIPMENT,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::DELIVERY_CONFIRMED),
         shipment_id,
         crate::event_topics::DELIVERY_CONFIRMED,
         event_counter,
@@ -1561,7 +1564,7 @@ pub fn emit_geofence_event(
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_SHIPMENT,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::GEOFENCE_EVENT),
         shipment_id,
         crate::event_topics::GEOFENCE_EVENT,
         event_counter,
@@ -1584,7 +1587,7 @@ pub fn emit_eta_updated(env: &Env, shipment_id: u64, new_eta: u64, data_hash: &B
     let event_counter = next_event_counter(env, shipment_id);
     let idempotency_key = generate_idempotency_key(
         env,
-        crate::event_topics::HASH_DOMAIN_SHIPMENT,
+        crate::event_topics::hash_domain_for_event(crate::event_topics::ETA_UPDATED),
         shipment_id,
         crate::event_topics::ETA_UPDATED,
         event_counter,

@@ -161,4 +161,6 @@ pub enum NavinError {
     InvalidAddress = 70,
     /// Maximum allowed recovery action entries for a shipment has been reached.
     RecoveryLimitExceeded = 71,
+    /// A settlement operation is already active for the shipment.
+    SettlementInProgress = 72,
 }

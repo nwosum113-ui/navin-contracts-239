@@ -147,3 +147,45 @@ fn test_settlement_counter_rollover_is_impossible() {
         );
     });
 }
+
+/// A stale active marker must prevent a second settlement from replacing it.
+/// This directly exercises the production helper before a token transfer can
+/// complete and clear the marker.
+#[test]
+fn test_create_settlement_rejects_existing_active_settlement() {
+    let (env, client, _admin, _token_contract) = setup_initialized_shipment_env();
+    let from = Address::generate(&env);
+    let to = Address::generate(&env);
+    let shipment_id = 42;
+
+    env.as_contract(&client.address, || {
+        let first = crate::create_settlement(
+            &env,
+            shipment_id,
+            SettlementOperation::Deposit,
+            100,
+            &from,
+            &to,
+        )
+        .unwrap();
+        assert_eq!(
+            crate::storage::get_active_settlement(&env, shipment_id),
+            Some(first)
+        );
+
+        let second = crate::create_settlement(
+            &env,
+            shipment_id,
+            SettlementOperation::Release,
+            100,
+            &from,
+            &to,
+        );
+        assert_eq!(second, Err(crate::NavinError::SettlementInProgress));
+        assert_eq!(
+            crate::storage::get_active_settlement(&env, shipment_id),
+            Some(first)
+        );
+        assert_eq!(crate::storage::get_settlement_counter(&env), first);
+    });
+}

@@ -401,6 +401,10 @@ fn create_settlement(
     from: &Address,
     to: &Address,
 ) -> Result<u64, NavinError> {
+    if storage::get_active_settlement(env, shipment_id).is_some() {
+        return Err(NavinError::SettlementInProgress);
+    }
+
     let settlement_id = storage::increment_settlement_counter(env);
     let settlement = SettlementRecord {
         settlement_id,
